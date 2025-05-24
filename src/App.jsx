@@ -53,10 +53,10 @@ function App() {
 
   return (
     <div className='bg-neutral-900 min-h-screen text-neutral-200 pt-10 pb-2 px-6 flex flex-col'>
-      <h1 className='text-center text-4xl font-semibold'><GiMoneyStack className='inline' /> Calculadora de cobro <GiMoneyStack className='inline' />
+      <h1 className='text-center text-2xl md:text-4xl font-semibold'><GiMoneyStack className='inline' /> Calculadora de cobro <GiMoneyStack className='inline' />
       </h1>
-      <div className='flex flex-col lg:w-fit mx-auto my-20'>
-        <div className='flex flex-col md:flex-row gap-4'>
+      <div className='flex flex-col w-full lg:w-fit mx-auto my-20'>
+        <div className='flex flex-col md:flex-row gap-y-4'>
           <div className='flex flex-col'>
             <label className={labelStyle} htmlFor="horasTrabajadas">Horas:</label>
             <input onChange={e => setHoras(e.target.value)} value={horas || ''} className={inputStyle} type="number" placeholder='' id='horasTrabajadas' />
