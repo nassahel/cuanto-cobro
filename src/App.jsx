@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './App.css'
+import { IoIosLaptop } from 'react-icons/io'
+import { GiMoneyStack } from 'react-icons/gi'
 
 function App() {
   const [horas, setHoras] = useState(null)
@@ -25,7 +27,7 @@ function App() {
     }
   }
 
-  useEffect(() => {
+  function calcular() {
     if (
       horas >= 0 &&
       minutos >= 0 &&
@@ -36,40 +38,59 @@ function App() {
       setError("")
     } else {
       setError("Hay valores que no son correctos")
+      setTimeout(() => setError(""), 3000)
     }
-  }, [horas, minutos, monto])
+  }
+
+  function limpiar() {
+    setHoras(null)
+    setMinutos(null)
+    setMonto(null)
+    setMontoTotal(0)
+  }
+
+  let aparecer = horas !== null && minutos !== null && monto !== null
 
   return (
-    <div className='bg-neutral-900 min-h-screen text-neutral-200 py-10 px-6'>
-      <h1 className='text-center text-4xl font-semibold'>Calculadora de cobro</h1>
-      <div className='flex flex-col lg:w-fit mx-auto my-24'>
+    <div className='bg-neutral-900 min-h-screen text-neutral-200 pt-10 pb-2 px-6 flex flex-col'>
+      <h1 className='text-center text-4xl font-semibold'><GiMoneyStack className='inline' /> Calculadora de cobro <GiMoneyStack className='inline' />
+      </h1>
+      <div className='flex flex-col lg:w-fit mx-auto my-20'>
         <div className='flex flex-col md:flex-row gap-4'>
           <div className='flex flex-col'>
             <label className={labelStyle} htmlFor="horasTrabajadas">Horas:</label>
-            <input onChange={e => setHoras(e.target.value)} value={horas} className={inputStyle} type="number" placeholder='' id='horasTrabajadas' />
+            <input onChange={e => setHoras(e.target.value)} value={horas || ''} className={inputStyle} type="number" placeholder='' id='horasTrabajadas' />
           </div>
           <div className='flex flex-col'>
             <label className={labelStyle} htmlFor="minutos">Minutos:</label>
-            <input onChange={e => setMinutos(e.target.value)} value={minutos} className={inputStyle} type="number" placeholder='' id='minutos' max={60} />
+            <input onChange={e => setMinutos(e.target.value)} value={minutos || ''} className={inputStyle} type="number" placeholder='' id='minutos' max={60} />
           </div>
         </div>
         <div className='flex flex-col'>
           <label className={labelStyle} htmlFor="montoHora">Monto por hora (USD):</label>
-          <input onChange={e => setMonto(e.target.value)} value={monto} className={inputStyle} type="number" placeholder='' id='montoHora' />
+          <input onChange={e => setMonto(e.target.value)} value={monto || ''} className={inputStyle} type="number" placeholder='' id='montoHora' />
         </div>
         <div className='flex justify-between items-center'>
           <h2 className={labelStyle}>Resultados:</h2>
-          <button onClick={copiarAlPortapapeles} className='bg-white text-black px-3 py-1 rounded cursor-pointer'>
+
+        </div>
+        <div className='bg-neutral-800 h-40 rounded-lg w-full p-6 text-lg font-semibold flex flex-col justify-between '>
+          <div ref={resultadoRef}>
+            <p>Tiempo: <span className='font-normal ms-2'>{horas != null && horas + " Horas"}  {minutos !== null && minutos + " Minutos"}</span> <br /> Monto: <span className='font-normal ms-2'>{montoTotal != 0 && montoTotal.toFixed(2) + " usd"}</span></p>
+          </div>
+          <button onClick={copiarAlPortapapeles} className='bg-neutral-500 hover:bg-neutral-600 duration-200 text-black text-sm px-3 py-1 rounded cursor-pointer w-fit ms-auto'>
             Copiar
           </button>
         </div>
-        <div ref={resultadoRef} className='bg-neutral-800 h-40 rounded-lg w-full p-6 text-lg font-semibold'>
-          <p>Tiempo: <span className='font-normal ms-2'>{horas || 0} Horas {minutos || 0} Minutos</span> <br /> Monto: <span className='font-normal ms-2'>{montoTotal.toFixed(2)} usd</span></p>
-          {/* <p>Monto: <span className='font-normal ms-2'>{montoTotal.toFixed(2)} usd</span></p> */}
+        <div className='flex gap-3'>
+          <button onClick={calcular} className='bg-white text-neutral-800 mt-2 font-bold text-lg hover:bg-neutral-200 active:scale-95 duration-200 py-1 rounded cursor-pointer w-2/3'>Calcular</button>
+          <button onClick={limpiar} className='bg-neutral-400 text-neutral-800 mt-2 font-bold text-lg hover:bg-neutral-300 active:scale-95 duration-200 py-1 rounded cursor-pointer w-1/3'>Limpiar</button>
         </div>
+
         {copiado && <p className='text-green-400 mt-2'>¡Copiado al portapapeles!</p>}
         <p className='text-red-500 italic'>{error}</p>
       </div>
+      <p className='mt-auto text-end italic text-neutral-400'>© By Nassa Elias. <IoIosLaptop className='inline' /></p>
     </div>
   )
 }
