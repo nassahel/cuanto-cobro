@@ -2,14 +2,19 @@ import React, { useEffect, useRef, useState } from 'react'
 import './App.css'
 import { IoIosLaptop } from 'react-icons/io'
 import { GiMoneyStack } from 'react-icons/gi'
+import Navbar from './components/Navbar'
 
 function App() {
   const [horas, setHoras] = useState(null)
   const [minutos, setMinutos] = useState(null)
   const [monto, setMonto] = useState(null)
+  const [idle, setIdle] = useState(null)
   const [montoTotal, setMontoTotal] = useState(0)
   const [error, setError] = useState('')
   const [copiado, setCopiado] = useState(false)
+  const [local, setLocal] = useState(null)
+
+  console.log(local);
 
   const resultadoRef = useRef(null)
 
@@ -27,20 +32,6 @@ function App() {
     }
   }
 
-  function calcular() {
-    if (
-      horas !== null && horas >= 0 &&
-      minutos !== null && minutos >= 0 && minutos <= 60 &&
-      monto !== null && monto >= 0
-    ) {
-      setMontoTotal(horas * monto + (minutos * monto / 60))
-      setError("")
-    } else {
-      setError("Hay valores que no son correctos")
-      setTimeout(() => setError(""), 3000)
-    }
-  }
-
   function limpiar() {
     setHoras(null)
     setMinutos(null)
@@ -48,9 +39,27 @@ function App() {
     setMontoTotal(0)
   }
 
+  useEffect(() => {
+    const loadLocalConfig = () => {
+      const localData = JSON.parse(localStorage.getItem('calculadoraDeCobroConfig'))
+      setLocal(localData)
+      localData?.monto !== '' && setMonto(Number(localData.monto))
+    }
+    //para que los cambios que se hacen en el nav se reflejen automaticamente.
+    loadLocalConfig();
+    window.addEventListener("configChanged", loadLocalConfig);
+    return () => window.removeEventListener("configChanged", loadLocalConfig);
+  }, [])
+
+  useEffect(() => {
+    setMontoTotal((horas * monto + (minutos * monto / 60)) * (1 - idle / 100));
+  }, [horas, monto, minutos, idle])
+
+
   return (
-    <div className='bg-neutral-900 min-h-screen text-neutral-200 pt-10 pb-2 px-6 flex flex-col'>
-      <h1 className='text-center text-2xl md:text-4xl font-semibold'>
+    <div className='bg-neutral-900 min-h-screen text-neutral-200 pt-2 px-6 flex flex-col'>
+      <Navbar />
+      <h1 className='text-center text-2xl mt-6 md:text-4xl font-semibold'>
         <GiMoneyStack className='inline' /> Calculadora de cobro <GiMoneyStack className='inline' />
       </h1>
 
@@ -79,23 +88,35 @@ function App() {
             />
           </div>
         </div>
-
-        <div className='flex flex-col'>
-          <label className={labelStyle} htmlFor="montoHora">Monto por hora (USD):</label>
-          <input
-            onChange={e => setMonto(e.target.value === '' ? null : Number(e.target.value))}
-            value={monto ?? ''}
-            className={inputStyle}
-            type="number"
-            id='montoHora'
-          />
+        <div className='flex flex-col md:flex-row gap-4'>
+          <div className='flex flex-col'>
+            <label className={labelStyle} htmlFor="montoHora">Monto por hora (USD):</label>
+            <input
+              onChange={e => setMonto(e.target.value === '' ? null : Number(e.target.value))}
+              value={monto ?? ''}
+              className={inputStyle}
+              type="number"
+              id='montoHora'
+            />
+          </div>
+          <div className='flex flex-col'>
+            <label className={labelStyle} htmlFor="idle">Descuento por Idle (%):</label>
+            <input
+              onChange={e => setIdle(e.target.value === '' ? null : Number(e.target.value))}
+              value={idle ?? ''}
+              className={inputStyle}
+              type="number"
+              id='idle'
+            />
+          </div>
         </div>
+
 
         <div className='flex justify-between items-center'>
           <h2 className={labelStyle}>Resultados:</h2>
         </div>
 
-        <div className='bg-neutral-800 h-40 rounded-lg w-full p-6 text-lg font-semibold flex flex-col justify-between '>
+        <div className='bg-neutral-800 rounded-lg w-full p-6 text-lg font-semibold flex flex-col justify-between '>
           <div ref={resultadoRef}>
             <p>Tiempo: <span className='font-normal ms-2'>
               {typeof horas === 'number' && horas > 0 && `${horas} Horas `}
@@ -104,23 +125,21 @@ function App() {
               Monto: <span className='font-normal ms-2'>
                 {montoTotal > 0 && `${montoTotal.toFixed(2)} usd`}
               </span>
+
+
+              {local?.email !== '' && <><br />Email: <span className='font-normal ms-2'>{local?.email}</span></>}
+              {local?.binanceId !== '' && <><br />Binance ID: <span className='font-normal ms-2'>{local?.binanceId}</span></>}
+
             </p>
           </div>
-
-          <button
-            onClick={copiarAlPortapapeles}
-            className='bg-neutral-500 hover:bg-neutral-600 duration-200 text-black text-sm px-3 py-1 rounded cursor-pointer w-fit ms-auto'
-          >
-            Copiar
-          </button>
         </div>
 
         <div className='flex gap-3'>
           <button
-            onClick={calcular}
+            onClick={copiarAlPortapapeles}
             className='bg-white text-neutral-800 mt-2 font-bold text-lg hover:bg-neutral-200 active:scale-95 duration-200 py-1 rounded cursor-pointer w-2/3'
           >
-            Calcular
+            Copiar
           </button>
           <button
             onClick={limpiar}
