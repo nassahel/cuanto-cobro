@@ -41,15 +41,29 @@ function App() {
 
   useEffect(() => {
     const loadLocalConfig = () => {
-      const localData = JSON.parse(localStorage.getItem('calculadoraDeCobroConfig'))
+      let localData = null
+      try {
+        const raw = localStorage.getItem('calculadoraDeCobroConfig')
+        if (raw) {
+          localData = JSON.parse(raw)
+        }
+      } catch (e) {
+        localData = null
+      }
       setLocal(localData)
-      localData?.monto !== '' && setMonto(Number(localData.monto))
+      // Chequea que localData existe y monto es un número válido
+      if (localData && localData.monto !== undefined && localData.monto !== '' && !isNaN(Number(localData.monto))) {
+        setMonto(Number(localData.monto))
+      } else {
+        setMonto(null) // o el valor default que quieras
+      }
     }
-    //para que los cambios que se hacen en el nav se reflejen automaticamente.
-    loadLocalConfig();
-    window.addEventListener("configChanged", loadLocalConfig);
-    return () => window.removeEventListener("configChanged", loadLocalConfig);
+
+    loadLocalConfig()
+    window.addEventListener("configChanged", loadLocalConfig)
+    return () => window.removeEventListener("configChanged", loadLocalConfig)
   }, [])
+
 
   useEffect(() => {
     setMontoTotal((horas * monto + (minutos * monto / 60)) * (1 - idle / 100));
@@ -126,9 +140,9 @@ function App() {
                 {montoTotal > 0 && `${montoTotal.toFixed(2)} usd`}
               </span>
 
+              {local?.email && local.email !== '' && (<><br />Email: <span className='font-normal ms-2'>{local.email}</span>                </>)}
+              {local?.binanceId && local.binanceId !== '' && (<><br />Binance ID: <span className='font-normal ms-2'>{local.binanceId}</span>                </>)}
 
-              {local?.email !== '' && <><br />Email: <span className='font-normal ms-2'>{local?.email}</span></>}
-              {local?.binanceId !== '' && <><br />Binance ID: <span className='font-normal ms-2'>{local?.binanceId}</span></>}
 
             </p>
           </div>
