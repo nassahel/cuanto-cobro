@@ -74,7 +74,7 @@ function App() {
     <div className='bg-neutral-900 min-h-screen text-neutral-200 pt-2 px-6 flex flex-col'>
       <Navbar />
       <h1 className='text-center text-2xl mt-6 md:text-4xl font-semibold'>
-        <GiMoneyStack className='inline' /> Calculadora de cobro <GiMoneyStack className='inline' />
+        <GiMoneyStack className='inline text-emerald-600' /> Calculadora de cobro <GiMoneyStack className='inline text-emerald-600' />
       </h1>
 
       <div className='flex flex-col w-full lg:w-fit mx-auto my-20'>
@@ -140,25 +140,17 @@ function App() {
                 {montoTotal > 0 && `${montoTotal.toFixed(2)} usd`}
               </span>
 
-              {local?.email && local.email !== '' && (<><br />Email: <span className='font-normal ms-2'>{local.email}</span>                </>)}
-              {local?.binanceId && local.binanceId !== '' && (<><br />Binance ID: <span className='font-normal ms-2'>{local.binanceId}</span>                </>)}
-
-
+              {local?.email && local.email !== '' && (<><br />Email: <span className='font-normal ms-2'>{local.email}</span></>)}
+              {local?.binanceId && local.binanceId !== '' && (<><br />Binance ID: <span className='font-normal ms-2'>{local.binanceId}</span></>)}
             </p>
           </div>
         </div>
 
         <div className='flex gap-3'>
-          <button
-            onClick={copiarAlPortapapeles}
-            className='bg-white text-neutral-800 mt-2 font-bold text-lg hover:bg-neutral-200 active:scale-95 duration-200 py-1 rounded cursor-pointer w-2/3'
-          >
+          <button onClick={copiarAlPortapapeles} className='bg-white text-neutral-800 mt-2 font-bold text-lg hover:bg-neutral-200 active:scale-95 duration-200 py-1 rounded cursor-pointer w-2/3'          >
             Copiar
           </button>
-          <button
-            onClick={limpiar}
-            className='bg-neutral-400 text-neutral-800 mt-2 font-bold text-lg hover:bg-neutral-300 active:scale-95 duration-200 py-1 rounded cursor-pointer w-1/3'
-          >
+          <button onClick={limpiar} className='bg-neutral-400 text-neutral-800 mt-2 font-bold text-lg hover:bg-neutral-300 active:scale-95 duration-200 py-1 rounded cursor-pointer w-1/3'          >
             Limpiar
           </button>
         </div>
